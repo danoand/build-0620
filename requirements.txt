@@ -81,6 +81,7 @@ gql==0.2.0
 graphql-core==1.1
 graphviz==0.13.2
 greenlet==0.4.15
+gunicorn==20.0.4
 h5py==2.9.0
 heapdict==1.0.0
 html5lib==1.0.1
