@@ -9,10 +9,12 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from flask import Flask
 from flask import request
 from flask import jsonify
+import cloudpickle as cp
 
 app = Flask(__name__)
 
 # Read environment variables
+is_heroku = os.environ.get("IS_HEROKU", default=False)
 loc_df    = os.environ.get("URL_DATAFRAME", default="df.csv")
 loc_tfidf = os.environ.get("URL_MODEL_TFIDF", default="tfidf_model.pkl")
 loc_nn    = os.environ.get("URL_MODEL_NN", default="nn_model.pkl")
@@ -79,9 +81,16 @@ def dummy_func(doc):
 
 # Read the Nearest Neighbors model
 print(f'INFO: loading the recommendation model')
-pkl_file = open(loc_nn, 'rb')
-nn       = pickle.load(pkl_file)
-pkl_file.close()
+# Load the model from the web
+if is_heroku:
+  print(f'INFO: loading the recommendation model from the web')
+  nn = cp.load(open("https://dsfiles.dananderson.dev/files/nn_model.pkl", 'rb'))
+
+# Load the model from disk (development)
+if not is_heroku:
+  pkl_file = open(loc_nn, 'rb')
+  nn       = pickle.load(pkl_file)
+  pkl_file.close()
 
 # Read the TF-IDF model 
 print(f'INFO: loading the word vectorization model')
