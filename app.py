@@ -2,6 +2,7 @@ import os
 import pickle
 import sklearn
 import pandas as pd
+import numpy as np
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 
@@ -91,7 +92,11 @@ pkl_tfidf_file.close()
 # Read in the dataframe
 print(f'INFO: loading the modeled dataset')
 df = pd.read_csv(loc_df)
-print(f'INFO: loaded {len(df.index)} dataframe rows\n')
+print(f'INFO: loaded {len(df.index)} dataframe rows')
+
+# Convert the dataframe to a dict
+print(f'INFO: generating a map of dataframe rows')
+dict_df = df.to_dict('records')
 
 @app.route('/test')
 def test():
@@ -107,17 +112,45 @@ def get_recommendation():
     # Get the request's body as json
     jsn = request.get_json(force=True)
 
-    # Score the inbound text 
-    tmp_score = tfidf.transform([jsn["text"]])
+    # Process the inbound text and generate a list of tokens
+    tmp_text = retain_std_chars(jsn["text"])
+    tmp_list = tnkize_text(tmp_text) 
+
+    # Score the list of tokends
+    tmp_score = tfidf.transform([tmp_list])
     tmp_rslt  = nn.kneighbors(tmp_score.todense())
 
     # Determine the row number of the first result
-    rslt = tmp_rslt[1][0]
+    rel_ranks = tmp_rslt[0][0]
+    rel_docs  = tmp_rslt[1][0]
 
-    # Get the data from dataframe
-    # tmp_dict = df.to_dict('records')[first_rslt]
+    # Iterate through the document references
+    ret_list = []
+    for idx, elm in np.ndenumerate(rel_docs):
+      print(rel_ranks[idx[0]])
+      tmp_dict = dict_df[rel_docs[idx[0]]]
 
-    return jsonify(rslt)
+      # Construct a temporary map
+      ret_dict = {}
+      ret_dict['description']       = tmp_dict['Description']
+      ret_dict['effects']           = tmp_dict['Effects']
+      ret_dict['flavor']            = tmp_dict['Flavor']
+      ret_dict['symptoms_diseases'] = tmp_dict['symptoms_diseases']
+      ret_dict['rating']            = tmp_dict['Rating']
+      ret_dict['strain']            = tmp_dict['Strain']
+      ret_dict['type']              = tmp_dict['Type']
+      ret_dict['df_index']          = int(rel_docs[idx[0]])
+      ret_dict['score']             = round(rel_ranks[idx[0]], 3)
+      
+      ret_list.append(ret_dict)
+
+    # Construct the return object
+    return_object = {}
+    return_object["msg"]              = "your recommendations"
+    return_object["text"]             = jsn["text"]
+    return_object["recommendations"]  = ret_list
+
+    return jsonify(return_object)
 
 
 if __name__ == '__main__':
