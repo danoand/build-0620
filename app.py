@@ -85,7 +85,7 @@ print(f'INFO: loading the recommendation model')
 # Load the model from the web
 if is_heroku:
   print(f'INFO: loading the recommendation model from the web')
-  nn = cp.load(open(urlopen("https://drive.google.com/file/d/pickled_file")))
+  nn = cp.load(open(urlopen("https://dsfiles.dananderson.dev/files/nn_model.pkl")))
   # nn = cp.load(open("https://dsfiles.dananderson.dev/files/nn_model.pkl", 'rb'))
 
 # Load the model from disk (development)
