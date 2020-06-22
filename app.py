@@ -136,7 +136,6 @@ def get_recommendation():
     # Iterate through the document references
     ret_list = []
     for idx, elm in np.ndenumerate(rel_docs):
-      print(rel_ranks[idx[0]])
       tmp_dict = dict_df[rel_docs[idx[0]]]
 
       # Construct a temporary map
