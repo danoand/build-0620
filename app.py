@@ -87,7 +87,7 @@ print(f'INFO: loading the recommendation model')
 if is_heroku:
   print(f'INFO: loading the recommendation model from the web')
   mdl_url = 'https://dsfiles.dananderson.dev/files/nn_model.pkl'
-  mdl_fname = wget.download(url)
+  mdl_fname = wget.download(mdl_url)
   pkl_file = open(mdl_fname, 'rb')
   nn       = pickle.load(pkl_file)
   pkl_file.close()
