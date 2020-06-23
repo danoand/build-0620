@@ -1,15 +1,19 @@
+# Standard imports
 import os
 import pickle
 import sklearn
 import pandas as pd
 import numpy as np
+import re
 
+# Modeling/vectorizing imports
 from sklearn.feature_extraction.text import TfidfVectorizer
+import spacy
 
+# Flask imports
 from flask import Flask
 from flask import request
 from flask import jsonify
-from urllib.request import urlopen
 
 app = Flask(__name__)
 
@@ -19,13 +23,7 @@ loc_df    = os.environ.get("URL_DATAFRAME", default="df.csv")
 loc_tfidf = os.environ.get("URL_MODEL_TFIDF", default="tfidf_model.pkl")
 loc_nn    = os.environ.get("URL_MODEL_NN", default="nn_model.pkl")
 
-# Steps to Clean the Strain Descriptions
-import re
-import pandas as pd
 # Use the spacy library to generate strain description tokens
-import spacy
-import wget
-
 # Instantiate a spacy object
 nlp = spacy.load("en_core_web_sm")
 
@@ -33,8 +31,7 @@ nlp = spacy.load("en_core_web_sm")
 rgxNotStdChars = re.compile(r'[^a-zA-z0-9.,!?/:;\"\'\s]')
 rgxMultWhtSpce = re.compile(r'\s{2,}')
 
-# 'retain_std_chars' takes a string and returns that string with non-standard
-#    characters removed
+# 'retain_std_chars' takes a string and returns that string with non-standard characters removed
 def retain_std_chars(val):
   # Is the passed value NaN?
   if pd.isna(val):
@@ -84,16 +81,10 @@ def dummy_func(doc):
 print(f'INFO: loading the recommendation model')
 # Load the model from the web
 if is_heroku:
-  print(f'INFO: loading the recommendation model from the web')
-  mdl_url = 'https://dsfiles.dananderson.dev/files/nn_model.pkl'
-  mdl_fname = wget.download(mdl_url)
-  pkl_file = open(mdl_fname, 'rb')
-  nn       = pickle.load(pkl_file)
-  pkl_file.close()
-  # nn = cp.load(open(urlopen("https://drive.google.com/file/d/1NCesKno6-w9lfRfvFTZHs_I4YVt9jF01")))
-  # nn = cp.load(open("https://dsfiles.dananderson.dev/files/nn_model.pkl", 'rb'))
+  print(f'INFO: not using Heroku as this time. Terminating.')
+  quit()
 
-# Load the model from disk (development)
+# Load the model from disk
 if not is_heroku:
   pkl_file = open(loc_nn, 'rb')
   nn       = pickle.load(pkl_file)
@@ -105,15 +96,16 @@ pkl_tfidf_file = open(loc_tfidf, 'rb')
 tfidf          = pickle.load(pkl_tfidf_file)
 pkl_tfidf_file.close()
 
-# Read in the dataframe
+# Read in the dataframe from disk
 print(f'INFO: loading the modeled dataset')
 df = pd.read_csv(loc_df)
 print(f'INFO: loaded {len(df.index)} dataframe rows')
 
 # Convert the dataframe to a dict
-print(f'INFO: generating a map of dataframe rows')
+print(f'INFO: generating a map of dataframe rows/elements')
 dict_df = df.to_dict('records')
 
+# /status can be used to verify the Flask app is running and responding
 @app.route('/status')
 def test():
     num_strains = len(dict_df)
@@ -123,6 +115,8 @@ def test():
 
     return jsonify(ret_dict)
 
+# /get_recommendation accepts a string of text and returns a collection of strain recommendations
+#     and associated metadata
 @app.route('/get_recommendation', methods = ['POST'])
 def get_recommendation():
     # Get the request's body as json
@@ -167,8 +161,6 @@ def get_recommendation():
 
     return jsonify(return_object)
 
-
+# Start the flask listening on localhost:5000
 if __name__ == '__main__':
-    app.run(host='localhost', port=5000)
-
-
+  app.run(host='localhost', port=5000)
