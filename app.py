@@ -9,7 +9,6 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from flask import Flask
 from flask import request
 from flask import jsonify
-import cloudpickle as cp
 from urllib.request import urlopen
 
 app = Flask(__name__)
