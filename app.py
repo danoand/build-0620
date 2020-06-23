@@ -114,13 +114,13 @@ print(f'INFO: loaded {len(df.index)} dataframe rows')
 print(f'INFO: generating a map of dataframe rows')
 dict_df = df.to_dict('records')
 
-@app.route('/test')
+@app.route('/status')
 def test():
+    num_strains = len(dict_df)
     ret_dict = {}
-    new_doc_score = tfidf.transform(["I want to feel super relaxed, yet energetic and creative"])
-    mdl_rslt = nn.kneighbors(new_doc_score.todense())
+    ret_dict["msg"] = "app.py is up and running"
+    ret_dict["note"] = "the number of strains in the dataset is: " + str(num_strains)
 
-    ret_dict["results"] = int(mdl_rslt[1][0][0])
     return jsonify(ret_dict)
 
 @app.route('/get_recommendation', methods = ['POST'])
