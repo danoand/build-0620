@@ -25,6 +25,7 @@ import re
 import pandas as pd
 # Use the spacy library to generate strain description tokens
 import spacy
+import wget
 
 # Instantiate a spacy object
 nlp = spacy.load("en_core_web_sm")
@@ -85,7 +86,12 @@ print(f'INFO: loading the recommendation model')
 # Load the model from the web
 if is_heroku:
   print(f'INFO: loading the recommendation model from the web')
-  nn = cp.load(open(urlopen("https://drive.google.com/file/d/1NCesKno6-w9lfRfvFTZHs_I4YVt9jF01")))
+  mdl_url = 'https://dsfiles.dananderson.dev/files/nn_model.pkl'
+  mdl_fname = wget.download(url)
+  pkl_file = open(mdl_fname, 'rb')
+  nn       = pickle.load(pkl_file)
+  pkl_file.close()
+  # nn = cp.load(open(urlopen("https://drive.google.com/file/d/1NCesKno6-w9lfRfvFTZHs_I4YVt9jF01")))
   # nn = cp.load(open("https://dsfiles.dananderson.dev/files/nn_model.pkl", 'rb'))
 
 # Load the model from disk (development)
