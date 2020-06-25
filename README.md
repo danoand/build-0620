@@ -13,3 +13,10 @@
 **List the Process Id of the App Running on Port 5000**
 
 `lsof -i :5000`
+
+**Reload with an Updated Caddyfile to Allow CORS Requests**
+
+```
+cd /app/caddy
+caddy reload --config Caddyfile
+```
