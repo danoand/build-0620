@@ -134,7 +134,7 @@ def get_recommendation():
   tmp_text = retain_std_chars(jsn["text"])
   tmp_list = tnkize_text(tmp_text) 
 
-  # Score the list of tokends
+  # Score the list of tokens
   tmp_score = tfidf.transform([tmp_list])
   tmp_rslt  = nn.kneighbors(tmp_score.todense())
 
