@@ -1,3 +1,8 @@
+### Operating Commands
+
+Listed below are the common commands to start the modeling recommendations microservice (Flask app) which currently runs
+on a Digital Ocean server.
+
 **Start Flask App in the Background and Log to File**
 
 `sudo nohup python3 app.py > log.txt 2>&1 &`
