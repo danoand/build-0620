@@ -32,7 +32,6 @@ caddy reload --config Caddyfile
 
 Here are the details on a Flask app running on a Digital Ocean server that serves recommendations based on a Nearest Neighbors model
 
-----
 ### Code
 
 You can find the code here:
@@ -40,12 +39,10 @@ You can find the code here:
 * **Latest Colab Notebook**: [link|(https://colab.research.google.com/drive/11eBBDI2Od1n9Lhj3HseKsnulpbdsxk9u?usp=sharing)]
 * **Flask App**: https://github.com/danoand/build-0620
 
-----
 ### Server
 
 * URL: `https://medcab2.dananderson.dev` (only use `https`)
 
-----
 ### Routes & Requests
 
 #### SIMPLE STATUS ROUTE
