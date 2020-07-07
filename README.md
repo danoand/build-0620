@@ -32,6 +32,10 @@ caddy reload --config Caddyfile
 
 Here are the details on a Flask app running on a Digital Ocean server that serves recommendations based on a Nearest Neighbors model
 
+### DS Team
+
+* Keino (DSPT5), Ravi (DSPT5), Dan (DSPT4)
+
 ### Code
 
 You can find the code here:
